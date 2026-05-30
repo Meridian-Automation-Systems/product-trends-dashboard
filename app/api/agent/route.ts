@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
 import type { TrendsData } from "@/lib/types";
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-
 // Build a compact, token-friendly summary of the dashboard so the model has
 // real context without us dumping the entire raw dataset.
 function buildContext(trends: TrendsData | null): string {
@@ -39,6 +37,10 @@ export async function POST(req: NextRequest) {
         { status: 500 }
       );
     }
+
+    // Create the client at request time (not module load) so a missing key
+    // never breaks `next build`.
+    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
     const { messages, trends } = (await req.json()) as {
       messages: { role: "user" | "assistant"; content: string }[];
