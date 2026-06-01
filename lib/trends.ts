@@ -30,3 +30,10 @@ export async function fetchRecentSearches(
   if (error) throw new Error(error.message);
   return (data as TrendSearchRow[]) || [];
 }
+
+// Loads the full saved-search history (used by the History panel).
+export async function fetchSearchHistory(
+  limit = 200
+): Promise<TrendSearchRow[]> {
+  return fetchRecentSearches(limit);
+}

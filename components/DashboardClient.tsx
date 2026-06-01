@@ -8,6 +8,8 @@ import InterestOverTimeChart from "./InterestOverTimeChart";
 import RegionChart from "./RegionChart";
 import RelatedQueries from "./RelatedQueries";
 import AgentPanel from "./AgentPanel";
+import ComparisonPanel from "./ComparisonPanel";
+import HistoryPanel from "./HistoryPanel";
 import { fetchTrends, fetchRecentSearches } from "@/lib/trends";
 import type { TrendsData, TrendSearchRow } from "@/lib/types";
 
@@ -16,6 +18,8 @@ export default function DashboardClient() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [recent, setRecent] = useState<TrendSearchRow[]>([]);
+  const [comparing, setComparing] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
 
   // Load recent searches on mount (so the dashboard isn't empty).
   useEffect(() => {
@@ -48,12 +52,31 @@ export default function DashboardClient() {
 
   return (
     <main className="mx-auto min-h-screen max-w-6xl px-6 py-10">
-      <header className="mb-8 flex items-center justify-between">
+      <header className="mb-8 flex flex-wrap items-end justify-between gap-4">
         <div>
           <Link href="/" className="text-sm text-slate-500 hover:text-slate-300">
             ← Home
           </Link>
           <h1 className="text-2xl font-bold">Product Trends Dashboard</h1>
+        </div>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setComparing((c) => !c)}
+            aria-pressed={comparing}
+            className={`rounded-lg border px-4 py-2 text-sm font-medium transition ${
+              comparing
+                ? "border-brand bg-brand/20 text-slate-100"
+                : "border-slate-700 text-slate-300 hover:border-brand"
+            }`}
+          >
+            Comparison
+          </button>
+          <button
+            onClick={() => setShowHistory(true)}
+            className="rounded-lg border border-slate-700 px-4 py-2 text-sm font-medium text-slate-300 transition hover:border-brand"
+          >
+            History
+          </button>
         </div>
       </header>
 
@@ -80,6 +103,8 @@ export default function DashboardClient() {
         </p>
       )}
 
+      {comparing && <ComparisonPanel searches={recent} />}
+
       {data ? (
         <div className="mt-8 space-y-6">
           <h2 className="text-lg font-semibold text-slate-300">
@@ -102,6 +127,19 @@ export default function DashboardClient() {
       )}
 
       <AgentPanel data={data} />
+
+      {showHistory && (
+        <HistoryPanel
+          onClose={() => setShowHistory(false)}
+          onSelect={(row) => {
+            setData(row.data);
+            setRecent((r) => [
+              row,
+              ...r.filter((x) => x.keyword !== row.keyword),
+            ]);
+          }}
+        />
+      )}
     </main>
   );
 }
