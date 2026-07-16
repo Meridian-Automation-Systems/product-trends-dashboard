@@ -13,24 +13,15 @@ import {
 } from "recharts";
 import type { TrendSearchRow } from "@/lib/types";
 
-// Distinct line colors cycled across the selected keywords.
-const COLORS = [
-  "#818cf8",
-  "#34d399",
-  "#f472b6",
-  "#fbbf24",
-  "#60a5fa",
-  "#f87171",
-  "#a78bfa",
-  "#2dd4bf",
-];
+// Distinct line colors cycled across the selected keywords \u2014 the accent,
+// ink, and neutral steps of the theme.
+const COLORS = ["#ec3013", "#201e1d", "#9b9797", "#e15b47", "#605d5d"];
 
 export default function ComparisonPanel({
   searches,
 }: {
   searches: TrendSearchRow[];
 }) {
-  // Track selected keywords. Default to the first two so the chart isn't empty.
   const [selected, setSelected] = useState<Set<string>>(
     () => new Set(searches.slice(0, 2).map((s) => s.keyword))
   );
@@ -44,21 +35,11 @@ export default function ComparisonPanel({
     });
   }
 
-  function selectAll() {
-    setSelected(new Set(searches.map((s) => s.keyword)));
-  }
-
-  function clearAll() {
-    setSelected(new Set());
-  }
-
   const selectedRows = useMemo(
     () => searches.filter((s) => selected.has(s.keyword)),
     [searches, selected]
   );
 
-  // Merge each keyword's interest-over-time series into a single dataset,
-  // keyed by date, with one value column per selected keyword.
   const merged = useMemo(() => {
     const byDate = new Map<string, Record<string, number | string>>();
     for (const row of selectedRows) {
@@ -72,21 +53,24 @@ export default function ComparisonPanel({
   }, [selectedRows]);
 
   return (
-    <div className="mt-8 space-y-5 rounded-xl border border-slate-800 bg-slate-900 p-5">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-lg font-semibold text-slate-300">
-          Compare keywords
-        </h2>
-        <div className="flex gap-2">
+    <section className="mt-9 border-t-2 border-divider pt-6">
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h4 className="m-0 text-xl font-extrabold">Compare keywords</h4>
+          <p className="mb-0 mt-1 text-[13px] text-ink/60">
+            Pick from your recent searches to see them on one chart.
+          </p>
+        </div>
+        <div className="flex gap-1">
           <button
-            onClick={selectAll}
-            className="rounded-lg border border-slate-700 px-3 py-1.5 text-xs text-slate-300 hover:border-brand"
+            onClick={() => setSelected(new Set(searches.map((s) => s.keyword)))}
+            className="px-1.5 py-2 text-[13px] font-extrabold text-brand hover:bg-brand/10"
           >
             Select all
           </button>
           <button
-            onClick={clearAll}
-            className="rounded-lg border border-slate-700 px-3 py-1.5 text-xs text-slate-300 hover:border-brand"
+            onClick={() => setSelected(new Set())}
+            className="px-1.5 py-2 text-[13px] font-extrabold text-brand hover:bg-brand/10"
           >
             Clear
           </button>
@@ -94,13 +78,12 @@ export default function ComparisonPanel({
       </div>
 
       {searches.length === 0 ? (
-        <p className="text-sm text-slate-500">
+        <p className="mt-4 text-sm text-ink/55">
           No recent searches to compare yet. Search a few keywords first.
         </p>
       ) : (
         <>
-          {/* Selectable keyword chips */}
-          <div className="flex flex-wrap gap-2">
+          <div className="mb-4 mt-4 flex flex-wrap gap-2">
             {searches.map((s) => {
               const active = selected.has(s.keyword);
               return (
@@ -108,22 +91,20 @@ export default function ComparisonPanel({
                   key={s.id}
                   onClick={() => toggle(s.keyword)}
                   aria-pressed={active}
-                  className={`rounded-full border px-3 py-1 text-xs transition ${
+                  className={`border px-3 py-1.5 text-[13px] transition ${
                     active
-                      ? "border-brand bg-brand/20 text-slate-100"
-                      : "border-slate-700 bg-slate-900 text-slate-400 hover:border-slate-500"
+                      ? "border-brand bg-brand text-paper"
+                      : "border-divider bg-transparent text-ink hover:border-brand"
                   }`}
                 >
-                  {active ? "✓ " : ""}
                   {s.keyword}
                 </button>
               );
             })}
           </div>
 
-          {/* Multi-line comparison chart */}
           {selectedRows.length === 0 ? (
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-ink/55">
               Select one or more keywords above to compare their interest over
               time.
             </p>
@@ -133,22 +114,24 @@ export default function ComparisonPanel({
                 data={merged}
                 margin={{ top: 5, right: 10, left: -20, bottom: 0 }}
               >
-                <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
+                <CartesianGrid stroke="#d7d3d3" vertical={false} />
                 <XAxis
                   dataKey="date"
-                  tick={{ fill: "#64748b", fontSize: 12 }}
-                  minTickGap={32}
+                  tick={{ fill: "#7d7979", fontSize: 12 }}
+                  minTickGap={48}
+                  stroke="#201e1d"
                 />
                 <YAxis
                   domain={[0, 100]}
-                  tick={{ fill: "#64748b", fontSize: 12 }}
+                  tick={{ fill: "#7d7979", fontSize: 12 }}
+                  stroke="#201e1d"
                 />
                 <Tooltip
                   contentStyle={{
-                    background: "#0f172a",
-                    border: "1px solid #1e293b",
-                    borderRadius: 8,
-                    color: "#e2e8f0",
+                    background: "#f8f4f4",
+                    border: "1px solid rgba(32,30,29,0.4)",
+                    borderRadius: 0,
+                    color: "#201e1d",
                   }}
                 />
                 <Legend wrapperStyle={{ fontSize: 12 }} />
@@ -168,6 +151,6 @@ export default function ComparisonPanel({
           )}
         </>
       )}
-    </div>
+    </section>
   );
 }

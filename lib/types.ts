@@ -35,3 +35,9 @@ export interface TrendSearchRow {
   created_at: string;
   data: TrendsData;
 }
+
+// One message in the assistant conversation.
+export interface ChatMessage {
+  role: "user" | "assistant";
+  content: string;
+}

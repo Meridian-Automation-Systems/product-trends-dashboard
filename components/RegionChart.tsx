@@ -11,36 +11,63 @@ import {
 } from "recharts";
 import type { RegionPoint } from "@/lib/types";
 
-export default function RegionChart({ data }: { data: RegionPoint[] }) {
+export default function RegionChart({
+  data,
+  onAsk,
+}: {
+  data: RegionPoint[];
+  onAsk?: () => void;
+}) {
   const top = data.slice(0, 10);
 
   return (
-    <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">
-      <h3 className="mb-4 font-semibold">Interest by region (top 10)</h3>
+    <div>
+      <div className="mb-2.5 flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h4 className="m-0 text-xl font-extrabold">Where demand lives</h4>
+          <p className="mb-0 mt-1 text-[13px] text-ink/60">
+            Top 10 regions by search interest.
+          </p>
+        </div>
+        {onAsk && (
+          <button
+            onClick={onAsk}
+            className="px-1 py-2 text-[13px] font-extrabold text-brand hover:bg-brand/10"
+          >
+            {"Ask →"}
+          </button>
+        )}
+      </div>
       <ResponsiveContainer width="100%" height={300}>
         <BarChart
           data={top}
           layout="vertical"
           margin={{ top: 5, right: 10, left: 20, bottom: 0 }}
         >
-          <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-          <XAxis type="number" domain={[0, 100]} tick={{ fill: "#64748b", fontSize: 12 }} />
+          <CartesianGrid stroke="#d7d3d3" horizontal={false} />
+          <XAxis
+            type="number"
+            domain={[0, 100]}
+            tick={{ fill: "#7d7979", fontSize: 12 }}
+            stroke="#201e1d"
+          />
           <YAxis
             type="category"
             dataKey="location"
             width={90}
-            tick={{ fill: "#94a3b8", fontSize: 12 }}
+            tick={{ fill: "#444141", fontSize: 12 }}
+            stroke="#201e1d"
           />
           <Tooltip
-            cursor={{ fill: "#1e293b80" }}
+            cursor={{ fill: "rgba(32,30,29,0.06)" }}
             contentStyle={{
-              background: "#0f172a",
-              border: "1px solid #1e293b",
-              borderRadius: 8,
-              color: "#e2e8f0",
+              background: "#f8f4f4",
+              border: "1px solid rgba(32,30,29,0.4)",
+              borderRadius: 0,
+              color: "#201e1d",
             }}
           />
-          <Bar dataKey="value" fill="#6366f1" radius={[0, 4, 4, 0]} />
+          <Bar dataKey="value" fill="#201e1d" />
         </BarChart>
       </ResponsiveContainer>
     </div>
