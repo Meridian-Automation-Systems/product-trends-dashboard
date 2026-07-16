@@ -35,7 +35,7 @@ export default function DashboardClient() {
   const [comparing, setComparing] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
 
-  // Assistant state lives here so suggestion chips, chart \u201cAsk\u201d hooks and
+  // Assistant state lives here so suggestion chips, chart "Ask" hooks and
   // the auto-brief can all talk to the same conversation.
   const [agentOpen, setAgentOpen] = useState(true);
   const [agentLoading, setAgentLoading] = useState(false);
@@ -44,17 +44,17 @@ export default function DashboardClient() {
     {
       role: "assistant",
       content:
-        "I read Google Trends so you don't have to. Search a keyword above \u2014 or tap a suggestion and I'll run one for you.",
+        "I read Google Trends so you don't have to. Search a keyword above — or tap a suggestion and I'll run one for you.",
     },
   ]);
 
-  // Load recent searches for the chips \u2014 but keep the guided start visible
+  // Load recent searches for the chips — but keep the guided start visible
   // until the user picks something.
   useEffect(() => {
     fetchRecentSearches()
       .then((rows) => setRecent(rows))
       .catch(() => {
-        /* table may not exist yet \u2014 ignore on first run */
+        /* table may not exist yet — ignore on first run */
       });
   }, []);
 
@@ -63,7 +63,7 @@ export default function DashboardClient() {
       ...m,
       {
         role: "assistant",
-        content: `Here's my read on \u201c${keyword}\u201d. ${localBrief(result)}`,
+        content: `Here's my read on “${keyword}”. ${localBrief(result)}`,
       },
     ]);
     setUnread((u) => (agentOpen ? 0 : u + 1));
@@ -119,7 +119,7 @@ export default function DashboardClient() {
     } catch {
       setMessages([
         ...next,
-        { role: "assistant", content: "Network error \u2014 please try again." },
+        { role: "assistant", content: "Network error — please try again." },
       ]);
     } finally {
       setAgentLoading(false);
@@ -130,7 +130,7 @@ export default function DashboardClient() {
   function agentSearch(keyword: string) {
     setMessages((m) => [
       ...m,
-      { role: "user", content: `Search \u201c${keyword}\u201d for me` },
+      { role: "user", content: `Search “${keyword}” for me` },
     ]);
     handleSearch(keyword);
   }
@@ -139,7 +139,7 @@ export default function DashboardClient() {
     ? suggestedQuestions(data).map((q) => ({ label: q, run: () => ask(q) }))
     : [
         {
-          label: "Search \u201ccold plunge tub\u201d for me",
+          label: "Search “cold plunge tub” for me",
           run: () => agentSearch("cold plunge tub"),
         },
         { label: "What can you do?", run: () => ask("What can you do?") },
@@ -201,8 +201,7 @@ export default function DashboardClient() {
             Keyword research
           </h1>
           <p className="mb-6 mt-0 text-[15px] text-ink/70">
-            Live Google Trends for any product keyword \u2014 explained in plain
-            English.
+            {"Live Google Trends for any product keyword — explained in plain English."}
           </p>
 
           <SearchBar onSearch={handleSearch} loading={loading} />
@@ -238,9 +237,9 @@ export default function DashboardClient() {
                 Start here
               </span>
               {[
-                "Search any product keyword above \u2014 or tap a recent search.",
+                "Search any product keyword above — or tap a recent search.",
                 "You'll get four numbers and three charts, each explained in plain English.",
-                "Ask the assistant what it means for your store \u2014 it reads the data for you.",
+                "Ask the assistant what it means for your store — it reads the data for you.",
               ].map((step, i) => (
                 <div
                   key={i}
@@ -262,7 +261,7 @@ export default function DashboardClient() {
 
           {loading && (
             <p className="mt-10 text-[15px] text-ink/60">
-              Pulling live Google Trends for \u201c{pendingKeyword}\u201d\u2026
+              {`Pulling live Google Trends for “${pendingKeyword}”…`}
             </p>
           )}
 
@@ -270,7 +269,7 @@ export default function DashboardClient() {
             <section className="mt-9 border-t-2 border-divider pt-6">
               <div className="flex flex-wrap items-baseline gap-3">
                 <h2 className="m-0 text-[25px] font-extrabold tracking-[-0.015em]">
-                  Results for \u201c{data.keyword}\u201d
+                  {`Results for “${data.keyword}”`}
                 </h2>
                 {verdict && (
                   <span
@@ -280,7 +279,7 @@ export default function DashboardClient() {
                   </span>
                 )}
                 <span className="text-xs text-ink/55">
-                  Live Google Trends \u00b7 last 6 months
+                  {"Live Google Trends · last 6 months"}
                 </span>
               </div>
 
@@ -311,7 +310,7 @@ export default function DashboardClient() {
                         }}
                         className="px-1 py-1.5 text-[13px] font-extrabold text-brand hover:bg-brand/10"
                       >
-                        Open the assistant \u2192
+                        {"Open the assistant →"}
                       </button>
                     )}
                   </div>
@@ -327,7 +326,7 @@ export default function DashboardClient() {
                   data={data.interest_over_time}
                   onAsk={() =>
                     ask(
-                      "Explain the interest-over-time chart for this keyword \u2014 what's the story?"
+                      "Explain the interest-over-time chart for this keyword — what's the story?"
                     )
                   }
                 />

@@ -10,8 +10,8 @@ export interface Suggestion {
 
 // The docked research assistant. Open by default; collapses to a labelled
 // rail with an unread badge instead of disappearing behind a tiny tab.
-// Presentational \u2014 conversation state lives in DashboardClient so chart
-// \u201cAsk\u201d hooks and suggestion chips can inject questions too.
+// Presentational — conversation state lives in DashboardClient so chart
+// "Ask" hooks and suggestion chips can inject questions too.
 export default function AgentPanel({
   data,
   open,
@@ -82,8 +82,8 @@ export default function AgentPanel({
             </div>
             <p className="mb-0 mt-0.5 text-xs text-ink/55">
               {data
-                ? `Reading \u201c${data.keyword}\u201d \u2014 ask me anything about it`
-                : "No keyword yet \u2014 I can run the first search for you"}
+                ? `Reading “${data.keyword}” — ask me anything about it`
+                : "No keyword yet — I can run the first search for you"}
             </p>
           </div>
           <button
@@ -124,7 +124,7 @@ export default function AgentPanel({
           ))}
           {loading && (
             <div className="max-w-[88%] bg-surface px-3 py-2.5 text-sm text-ink/55">
-              Reading the data\u2026
+              {"Reading the data…"}
             </div>
           )}
           {!loading && suggestions.length > 0 && (
@@ -152,7 +152,7 @@ export default function AgentPanel({
           <input
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask about this keyword\u2026"
+            placeholder={"Ask about this keyword…"}
             className="min-w-0 flex-1 border border-divider bg-surface px-2.5 py-1.5 text-sm text-ink caret-brand outline-none placeholder:text-ink/50 hover:border-ink/45 focus-visible:border-brand"
           />
           <button

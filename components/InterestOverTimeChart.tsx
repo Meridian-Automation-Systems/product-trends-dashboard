@@ -24,8 +24,7 @@ export default function InterestOverTimeChart({
         <div>
           <h4 className="m-0 text-xl font-extrabold">Interest over time</h4>
           <p className="mb-0 mt-1 text-[13px] text-ink/60">
-            Weekly search interest on Google, 0\u2013100. 100 is this keyword's
-            single busiest week.
+            {"Weekly search interest on Google, 0–100. 100 is this keyword's single busiest week."}
           </p>
         </div>
         {onAsk && (
@@ -33,7 +32,7 @@ export default function InterestOverTimeChart({
             onClick={onAsk}
             className="px-1 py-2 text-[13px] font-extrabold text-brand hover:bg-brand/10"
           >
-            Ask about this chart \u2192
+            {"Ask about this chart →"}
           </button>
         )}
       </div>

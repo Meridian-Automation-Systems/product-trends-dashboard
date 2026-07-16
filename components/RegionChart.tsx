@@ -34,7 +34,7 @@ export default function RegionChart({
             onClick={onAsk}
             className="px-1 py-2 text-[13px] font-extrabold text-brand hover:bg-brand/10"
           >
-            Ask \u2192
+            {"Ask →"}
           </button>
         )}
       </div>

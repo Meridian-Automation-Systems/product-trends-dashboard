@@ -44,7 +44,7 @@ export default function HistoryPanel({
         <div className="text-xl font-extrabold">Search history</div>
         <div className="overflow-y-auto">
           {loading ? (
-            <p className="text-sm text-ink/55">Loading history\u2026</p>
+            <p className="text-sm text-ink/55">{"Loading history…"}</p>
           ) : error ? (
             <p className="border-2 border-brand bg-brand-tint p-4 text-sm text-brand-deep">
               {error}

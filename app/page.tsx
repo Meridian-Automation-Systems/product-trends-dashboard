@@ -4,23 +4,23 @@ const FEATURES = [
   {
     num: "01",
     title: "Search a keyword",
-    copy: "Type any product idea \u2014 \u201ccold plunge tub\u201d, \u201csauna blanket\u201d \u2014 and we pull live Google Trends: six months of interest, the top regions, and the searches around it.",
+    copy: "Type any product idea — “cold plunge tub”, “sauna blanket” — and we pull live Google Trends: six months of interest, the top regions, and the searches around it.",
   },
   {
     num: "02",
     title: "Read it at a glance",
-    copy: "Four numbers and three charts, each explained in plain English. No \u201cmomentum\u201d without telling you what momentum is. Compare keywords side by side when you're choosing between products.",
+    copy: "Four numbers and three charts, each explained in plain English. No “momentum” without telling you what momentum is. Compare keywords side by side when you're choosing between products.",
   },
   {
     num: "03",
     title: "Ask the assistant",
-    copy: "Every search comes with a written brief: is it climbing, is it seasonal, is it worth stocking. Then ask follow-ups \u2014 the assistant sits beside your results and answers from the data on screen, not from thin air.",
+    copy: "Every search comes with a written brief: is it climbing, is it seasonal, is it worth stocking. Then ask follow-ups — the assistant sits beside your results and answers from the data on screen, not from thin air.",
   },
 ];
 
 const STATS = [
   { num: "3", label: "Data views per search" },
-  { num: "0\u2013100", label: "One scale for everything" },
+  { num: "0–100", label: "One scale for everything" },
   { num: "60s", label: "From keyword to first insight" },
   { num: "1", label: "Analyst included" },
 ];
@@ -54,10 +54,7 @@ export default function Home() {
             <span className="block">Before you stock it.</span>
           </h1>
           <p className="mt-9 max-w-[58ch] text-[17px] leading-7">
-            Search any product keyword and get live Google Trends data \u2014
-            interest over time, where demand lives, and what's rising. A
-            built-in assistant reads the charts for you and answers the only
-            question that matters: so what?
+            {"Search any product keyword and get live Google Trends data — interest over time, where demand lives, and what's rising. A built-in assistant reads the charts for you and answers the only question that matters: so what?"}
           </p>
           <div className="mt-7 flex flex-wrap gap-3">
             <Link
@@ -132,7 +129,7 @@ export default function Home() {
               href="/dashboard"
               className="inline-block border border-paper px-3.5 py-2 text-sm font-extrabold text-paper no-underline transition hover:bg-paper/10"
             >
-              Open the dashboard \u2014 it's one click
+              {"Open the dashboard — it's one click"}
             </Link>
           </div>
         </div>
@@ -140,8 +137,7 @@ export default function Home() {
 
       <div className="mx-auto max-w-[1200px] px-6 md:px-12">
         <footer className="py-14 text-[13px] text-ink/70">
-          Product Trends \u2014 live Google Trends research with a built-in
-          analyst.
+          {"Product Trends — live Google Trends research with a built-in analyst."}
         </footer>
       </div>
     </main>

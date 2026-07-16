@@ -21,7 +21,7 @@ export default function RelatedQueries({
         <div>
           <h4 className="m-0 text-xl font-extrabold">What people search</h4>
           <p className="mb-0 mt-1 text-[13px] text-ink/60">
-            Related queries \u2014 click one to search it.
+            {"Related queries — click one to search it."}
           </p>
         </div>
         {onAsk && (
@@ -29,19 +29,19 @@ export default function RelatedQueries({
             onClick={onAsk}
             className="px-1 py-2 text-[13px] font-extrabold text-brand hover:bg-brand/10"
           >
-            Ask \u2192
+            {"Ask →"}
           </button>
         )}
       </div>
       <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-x-7 gap-y-3">
         <QueryList
-          title="Top \u2014 steady favorites"
+          title={"Top — steady favorites"}
           items={top}
           accent={false}
           onSearch={onSearch}
         />
         <QueryList
-          title="Rising \u2014 growing fast"
+          title={"Rising — growing fast"}
           items={rising}
           accent
           onSearch={onSearch}
