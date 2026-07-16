@@ -1,125 +1,169 @@
 "use client";
 
-import { useState } from "react";
-import type { TrendsData } from "@/lib/types";
+import { useEffect, useRef, useState } from "react";
+import type { ChatMessage, TrendsData } from "@/lib/types";
 
-interface Message {
-  role: "user" | "assistant";
-  content: string;
+export interface Suggestion {
+  label: string;
+  run: () => void;
 }
 
-// A slide-in/out assistant. It receives the currently loaded trends data and
-// answers questions about it via the /api/agent route (OpenAI server-side).
-export default function AgentPanel({ data }: { data: TrendsData | null }) {
-  const [open, setOpen] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      role: "assistant",
-      content:
-        "Hi! I'm your research assistant. Search a keyword, then ask me what the trends mean for your store.",
-    },
-  ]);
+// The docked research assistant. Open by default; collapses to a labelled
+// rail with an unread badge instead of disappearing behind a tiny tab.
+// Presentational \u2014 conversation state lives in DashboardClient so chart
+// \u201cAsk\u201d hooks and suggestion chips can inject questions too.
+export default function AgentPanel({
+  data,
+  open,
+  unread,
+  onToggle,
+  messages,
+  loading,
+  suggestions,
+  onAsk,
+}: {
+  data: TrendsData | null;
+  open: boolean;
+  unread: number;
+  onToggle: () => void;
+  messages: ChatMessage[];
+  loading: boolean;
+  suggestions: Suggestion[];
+  onAsk: (text: string) => void;
+}) {
   const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
-  async function send(e: React.FormEvent) {
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, [messages, loading, open]);
+
+  function send(e: React.FormEvent) {
     e.preventDefault();
     const text = input.trim();
     if (!text || loading) return;
-
-    const next = [...messages, { role: "user" as const, content: text }];
-    setMessages(next);
     setInput("");
-    setLoading(true);
+    onAsk(text);
+  }
 
-    try {
-      const res = await fetch("/api/agent", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: next, trends: data }),
-      });
-      const json = await res.json();
-      setMessages([
-        ...next,
-        {
-          role: "assistant",
-          content: json.reply || json.error || "Something went wrong.",
-        },
-      ]);
-    } catch {
-      setMessages([
-        ...next,
-        { role: "assistant", content: "Network error — please try again." },
-      ]);
-    } finally {
-      setLoading(false);
-    }
+  if (!open) {
+    return (
+      <aside className="border-l-2 border-divider">
+        <div className="sticky top-0 h-screen">
+          <button
+            onClick={onToggle}
+            aria-label="Open assistant"
+            className="flex h-full w-full flex-col items-center gap-3 bg-surface py-4 transition hover:bg-brand-tint"
+          >
+            <span className="inline-block h-2.5 w-2.5 bg-brand" />
+            {unread > 0 && (
+              <span className="bg-brand px-1.5 py-0.5 text-[11px] font-extrabold text-paper">
+                {unread}
+              </span>
+            )}
+            <span className="text-[13px] font-extrabold uppercase tracking-widest text-ink [writing-mode:vertical-rl]">
+              Assistant
+            </span>
+          </button>
+        </div>
+      </aside>
+    );
   }
 
   return (
-    <>
-      {/* Toggle handle — pulls the panel in/out */}
-      <button
-        onClick={() => setOpen((o) => !o)}
-        className="fixed right-0 top-1/2 z-50 -translate-y-1/2 rounded-l-lg bg-brand px-3 py-4 font-medium text-white shadow-lg transition hover:bg-brand-dark"
-        aria-label="Toggle AI assistant"
-      >
-        {open ? "→" : "AI"}
-      </button>
-
-      {/* Sliding panel */}
-      <aside
-        className={`fixed right-0 top-0 z-40 flex h-full w-full max-w-md flex-col border-l border-slate-800 bg-slate-900 shadow-2xl transition-transform duration-300 ${
-          open ? "translate-x-0" : "translate-x-full"
-        }`}
-      >
-        <div className="border-b border-slate-800 p-4">
-          <h2 className="font-semibold">AI Research Assistant</h2>
-          <p className="text-xs text-slate-500">
-            {data
-              ? `Context: "${data.keyword}"`
-              : "Search a keyword to give me context"}
-          </p>
+    <aside className="min-w-0 border-l-2 border-divider">
+      <div className="sticky top-0 flex h-screen flex-col overflow-hidden bg-paper">
+        <div className="flex items-start gap-3 border-b-2 border-divider px-5 py-4">
+          <span className="mt-1 inline-block h-2.5 w-2.5 shrink-0 bg-brand" />
+          <div className="min-w-0 flex-1">
+            <div className="text-sm font-extrabold uppercase tracking-wide">
+              Research assistant
+            </div>
+            <p className="mb-0 mt-0.5 text-xs text-ink/55">
+              {data
+                ? `Reading \u201c${data.keyword}\u201d \u2014 ask me anything about it`
+                : "No keyword yet \u2014 I can run the first search for you"}
+            </p>
+          </div>
+          <button
+            onClick={onToggle}
+            aria-label="Collapse assistant"
+            className="flex h-9 w-9 shrink-0 items-center justify-center border border-divider text-ink transition hover:bg-ink/5"
+          >
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="m9 18 6-6-6-6" />
+            </svg>
+          </button>
         </div>
 
-        <div className="flex-1 space-y-3 overflow-y-auto p-4">
+        <div
+          ref={scrollRef}
+          className="flex flex-1 flex-col gap-3 overflow-y-auto px-5 py-5"
+        >
           {messages.map((m, i) => (
             <div
               key={i}
-              className={`max-w-[85%] rounded-lg px-3 py-2 text-sm ${
+              className={`max-w-[88%] px-3 py-2.5 text-sm leading-relaxed ${
                 m.role === "user"
-                  ? "ml-auto bg-brand text-white"
-                  : "bg-slate-800 text-slate-200"
+                  ? "ml-auto bg-brand text-paper"
+                  : "bg-surface text-ink"
               }`}
             >
               {m.content}
             </div>
           ))}
           {loading && (
-            <div className="max-w-[85%] rounded-lg bg-slate-800 px-3 py-2 text-sm text-slate-400">
-              Thinking…
+            <div className="max-w-[88%] bg-surface px-3 py-2.5 text-sm text-ink/55">
+              Reading the data\u2026
+            </div>
+          )}
+          {!loading && suggestions.length > 0 && (
+            <div className="mt-1 flex flex-col gap-2">
+              <span className="text-[10px] uppercase tracking-widest text-ink/55">
+                Suggested
+              </span>
+              {suggestions.map((s) => (
+                <button
+                  key={s.label}
+                  onClick={s.run}
+                  className="border border-divider px-3 py-2 text-left text-[13px] text-ink transition hover:border-brand hover:bg-brand-tint"
+                >
+                  {s.label}
+                </button>
+              ))}
             </div>
           )}
         </div>
 
-        <form onSubmit={send} className="border-t border-slate-800 p-4">
-          <div className="flex gap-2">
-            <input
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask about this keyword…"
-              className="flex-1 rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm outline-none focus:border-brand"
-            />
-            <button
-              type="submit"
-              disabled={loading}
-              className="rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-dark disabled:opacity-50"
-            >
-              Send
-            </button>
-          </div>
+        <form
+          onSubmit={send}
+          className="flex gap-2 border-t-2 border-divider px-5 py-4"
+        >
+          <input
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Ask about this keyword\u2026"
+            className="min-w-0 flex-1 border border-divider bg-surface px-2.5 py-1.5 text-sm text-ink caret-brand outline-none placeholder:text-ink/50 hover:border-ink/45 focus-visible:border-brand"
+          />
+          <button
+            type="submit"
+            disabled={loading}
+            className="bg-brand px-4 py-2 text-sm font-extrabold text-paper transition hover:bg-brand-dark active:bg-brand-deep disabled:opacity-45"
+          >
+            Ask
+          </button>
         </form>
-      </aside>
-    </>
+      </div>
+    </aside>
   );
 }

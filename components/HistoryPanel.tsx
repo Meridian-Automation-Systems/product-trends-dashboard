@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { fetchSearchHistory } from "@/lib/trends";
 import type { TrendSearchRow } from "@/lib/types";
 
-// A modal overlay that loads and lists the full saved-search history.
+// A modal dialog listing the full saved-search history.
 // Clicking an entry loads that search back into the dashboard.
 export default function HistoryPanel({
   onClose,
@@ -24,7 +24,6 @@ export default function HistoryPanel({
       .finally(() => setLoading(false));
   }, []);
 
-  // Close on Escape for keyboard accessibility.
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (e.key === "Escape") onClose();
@@ -35,59 +34,61 @@ export default function HistoryPanel({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-start justify-center bg-black/60 p-4 sm:p-10"
+      className="fixed inset-0 z-50 grid place-items-center bg-[#2d2b2b]/50 p-4"
       onClick={onClose}
     >
       <div
-        className="flex max-h-full w-full max-w-2xl flex-col rounded-xl border border-slate-800 bg-slate-900 shadow-xl"
+        className="flex max-h-full w-full max-w-xl flex-col gap-3 bg-surface p-4 shadow-[0_12px_32px_rgba(45,43,43,0.22)]"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between border-b border-slate-800 p-5">
-          <h2 className="text-lg font-semibold text-slate-200">
-            Search history
-          </h2>
-          <button
-            onClick={onClose}
-            aria-label="Close history"
-            className="rounded-lg border border-slate-700 px-3 py-1 text-sm text-slate-300 hover:border-brand"
-          >
-            Close
-          </button>
-        </div>
-
-        <div className="overflow-y-auto p-5">
+        <div className="text-xl font-extrabold">Search history</div>
+        <div className="overflow-y-auto">
           {loading ? (
-            <p className="text-sm text-slate-500">Loading history…</p>
+            <p className="text-sm text-ink/55">Loading history\u2026</p>
           ) : error ? (
-            <p className="rounded-lg border border-rose-900 bg-rose-950/50 p-4 text-sm text-rose-300">
+            <p className="border-2 border-brand bg-brand-tint p-4 text-sm text-brand-deep">
               {error}
             </p>
           ) : rows.length === 0 ? (
-            <p className="text-sm text-slate-500">No searches saved yet.</p>
+            <p className="text-sm text-ink/55">No searches saved yet.</p>
           ) : (
-            <ul className="space-y-2">
+            <>
+              <div className="flex items-center justify-between border-b-2 border-divider pb-2 text-[11px] uppercase tracking-widest text-ink/60">
+                <span>Keyword</span>
+                <span>When</span>
+              </div>
               {rows.map((r) => (
-                <li key={r.id}>
-                  <button
-                    onClick={() => {
-                      onSelect(r);
-                      onClose();
-                    }}
-                    className="flex w-full items-center justify-between gap-3 rounded-lg border border-slate-800 bg-slate-950/50 px-4 py-3 text-left transition hover:border-brand"
-                  >
-                    <span className="truncate font-medium text-slate-200">
-                      {r.keyword}
+                <button
+                  key={r.id}
+                  onClick={() => {
+                    onSelect(r);
+                    onClose();
+                  }}
+                  className="flex w-full items-center justify-between gap-3 border-b border-divider px-1 py-3 text-left transition hover:bg-ink/5"
+                >
+                  <span className="truncate text-sm font-semibold text-ink">
+                    {r.keyword}
+                  </span>
+                  {r.created_at && (
+                    <span className="shrink-0 text-xs text-ink/55">
+                      {formatDate(r.created_at)}
                     </span>
-                    {r.created_at && (
-                      <span className="shrink-0 text-xs text-slate-500">
-                        {formatDate(r.created_at)}
-                      </span>
-                    )}
-                  </button>
-                </li>
+                  )}
+                </button>
               ))}
-            </ul>
+              <p className="mb-0 mt-2.5 text-xs text-ink/55">
+                Click a row to load that search.
+              </p>
+            </>
           )}
+        </div>
+        <div className="flex justify-end">
+          <button
+            onClick={onClose}
+            className="border border-divider px-4 py-2 text-sm font-extrabold text-ink transition hover:bg-ink/5"
+          >
+            Close
+          </button>
         </div>
       </div>
     </div>
